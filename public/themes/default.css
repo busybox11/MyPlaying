@@ -13,13 +13,14 @@ html {
 }
 
 h2 {
-    font-size: 19vh;
-    line-height: 15vh;
+    font-size: 17vh;
+    line-height: 17vh;
+    padding-bottom: 1.5vh;
     margin: 0;
 }
 
 span {
-    font-size: 14vh;
+    font-size: 12vh;
 }
 
 small {
@@ -90,8 +91,7 @@ body {
 }
 
 #song_info_strings {
-    line-height: 18vh;
-    padding: 4vh 0;
+    line-height: 16vh;
 }
 
 #song_title {
@@ -99,7 +99,7 @@ body {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
-            line-clamp: 2; 
+    line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
