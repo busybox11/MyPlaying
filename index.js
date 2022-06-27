@@ -1,11 +1,63 @@
 require('dotenv').config()
 
+var events = require('events')
+
 const express = require(`express`)
 const expressWs = require(`@wll8/express-ws`)
+var WebSocketClient = require('websocket').client;
 const { app, wsRoute } = expressWs(express())
 
+const PORT = process.env.SERVER_PORT || 7089
+
+let lastPlayingState = {}
+
+// Connect to spotify WS and create event
+const spotifyWs = new WebSocketClient()
+
+spotifyWs.on('connect', function(connection) {
+    console.log('[SpotifyWS] Connected')
+
+    connection.on('message', function(message) {
+        if (message.type === 'utf8') {
+            const msgData = JSON.parse(message.utf8Data)
+
+            if (msgData.type == 'updatedSong') {
+                try {
+                    lastPlayingState = {
+                        meta: {
+                            source: "spotify",
+                            url: `https://open.spotify.com/track/${msgData.id}`,
+                            image: msgData.albumArt
+                        },
+                        progress: msgData.progress,
+                        title: msgData.name,
+                        artist: msgData.artist,
+                        album: msgData.album
+                    }
+                } catch(e) {}
+
+                spotifyEvent.emit('updatedSong')
+            }
+        }
+    })
+})
+
+spotifyWs.connect(`ws://${process.env.SPTWSS_URL}/`)
+
+var spotifyEvent = new events.EventEmitter()
+
 app.ws(`/playing`, (ws, req) => {
-    ws.send(JSON.stringify({
+    function sendPlayingSong() {
+        ws.send(JSON.stringify({
+            success: true,
+            type: "player",
+            data: lastPlayingState
+        }))
+    }
+
+    sendPlayingSong()
+
+    /* ws.send(JSON.stringify({
         success: true,
         type: "player",
         data: {
@@ -23,9 +75,24 @@ app.ws(`/playing`, (ws, req) => {
             artist: "Tennyson",
             album: "Rot"            
         }
-    }))
+    })) */
+
+    spotifyEvent.on('updatedSong', sendPlayingSong)
 })
+
+// Every second increment lastPlayingState progress
+setInterval(function(){ 
+    try {
+        lastPlayingState.progress.current += 1000
+
+        // If going over song duration, stays at the end instead of incrementing
+        if (lastPlayingState.progress.current >= lastPlayingState.progress.duration) {
+            lastPlayingState.progress.current = lastPlayingState.progress.duration
+        }
+    } catch(e) {}
+}, 1000)
 
 app.use(express.static('public'))
 
-app.listen(process.env.SERVER_PORT)
+app.listen(PORT)
+console.log(`[Server] Listening on :${PORT}`)

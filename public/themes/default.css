@@ -13,12 +13,13 @@ html {
 }
 
 h2 {
-    font-size: 20vh;
+    font-size: 19vh;
+    line-height: 15vh;
     margin: 0;
 }
 
 span {
-    font-size: 15vh;
+    font-size: 14vh;
 }
 
 small {
@@ -33,6 +34,7 @@ body {
     align-content: center;
     gap: 12vh;
     height: 100vh;
+    width: 100vw;
 }
 
 #img_container {
@@ -81,11 +83,10 @@ body {
 
 #song_info {
     width: 100%;
-    
     display: flex;
     flex-direction: column;
-
     justify-content: space-between;
+    overflow: hidden;
 }
 
 #song_info_strings {
@@ -93,14 +94,29 @@ body {
     padding: 4vh 0;
 }
 
+#song_title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+            line-clamp: 2; 
+    -webkit-box-orient: vertical;
+}
+
 #song_artist {
     color: #BBB;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
 }
 
 #progressbar_div {
-    display: flex;
+    /* Should be display: flex; */
     flex-direction: column;
     gap: 4vh;
+
+    display: none;
 }
 
 #progressbar_times {
@@ -123,4 +139,6 @@ body {
     height: 100%;
 
     background: white;
+
+    transition: width 1s linear;
 }

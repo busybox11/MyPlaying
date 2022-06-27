@@ -3,12 +3,15 @@ const DOM = {
     title: document.getElementById('song_title'),
     artist: document.getElementById('song_artist'),
     progress: {
+        container: document.getElementById('progressbar_div'),
         current: document.getElementById('progressbar_current_time'),
         fullDuration: document.getElementById('progressbar_full_duration'),
         bar: document.getElementById('progressbar_current_bar')
     },
     pauseIcon: document.getElementById('img_pause_icon')
 }
+
+let lastState = {}
 
 const utils = {
     nonZeroHour: (dates) => {
@@ -28,6 +31,7 @@ let socket = new WebSocket(`ws://${window.location.host}/playing`)
 
 function handleProgress(progress) {
     try {
+        DOM.progress.container.style.display = 'flex'
         if (progress.playing) {
             DOM.pauseIcon.style.display = 'none'
         } else {
@@ -47,7 +51,10 @@ function handleProgress(progress) {
         DOM.progress.fullDuration.innerText = fullDurationDate.toISOString().slice(sliceDateOffset, 19)
 
         DOM.progress.bar.style.width = `${progress.current * 100 / progress.duration}%`
-    } catch(e) { console.error(e) }
+    } catch(e) {
+        console.error(e)
+        DOM.progress.container.style.display = 'none'
+    }
 }
 
 function handlePlayerEvents(data) {
@@ -62,7 +69,23 @@ function handlePlayerEvents(data) {
 
         handleProgress(song.progress)
     } catch(e) { console.error(e) }
+
+    lastState = data.data
 }
+
+// Every second increment progress
+setInterval(function(){ 
+    try {
+        lastState.progress.current += 1000
+
+        // If going over song duration, stays at the end instead of incrementing
+        if (lastState.progress.current >= lastState.progress.duration) {
+            lastState.progress.current = lastState.progress.duration
+        }
+
+        handleProgress(lastState.progress)
+    } catch(e) {}
+}, 1000)
 
 socket.onopen = function(event) {
     console.log('[WS] Connected')
