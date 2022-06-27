@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="themes/default.css" rel="stylesheet">
+</head>
+<body>
+    <div id="img_container">
+        <svg id="img_pause_icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pause"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        <img id="img_song">
+        <svg id="img_placeholder" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-music"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+    </div>
+
+    <div id="song_info">
+        <div id="song_info_strings">
+            <h2 id="song_title">No playing info</h2>
+            <span id="song_artist">No player is currently active</span>
+        </div>
+
+        <div id="progressbar_div">
+            <div id="progressbar_times">
+                <small id="progressbar_current_time">0:00</small>
+                <small id="progressbar_full_duration">0:00</small>
+            </div>
+            <div id="progressbar">
+                <div id="progressbar_current_bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="widget.js"></script>
+</body>
+</html>

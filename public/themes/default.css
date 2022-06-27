@@ -1,0 +1,126 @@
+/* Font */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200..900&display=swap');
+
+html {
+    background: black;
+    color: white;
+
+    font-family: 'Outfit', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+h2 {
+    font-size: 20vh;
+    margin: 0;
+}
+
+span {
+    font-size: 15vh;
+}
+
+small {
+    font-size: 10vh;
+}
+
+body {
+    margin: 0;
+    padding: 12vh;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    gap: 12vh;
+    height: 100vh;
+}
+
+#img_container {
+    height: 100%;
+    aspect-ratio: 1/1;
+    background: #111111;
+    position: relative;
+}
+
+#img_placeholder {
+    color: #6A6A6A;
+    z-index: 0;
+
+    height: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#img_song {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    z-index: 2;
+    display: none;
+    position: absolute;
+}
+
+#img_pause_icon {
+    height: 25vh;
+    padding: 5vh;
+
+    position: absolute;
+    bottom: 5vh;
+    right: 5vh;
+    z-index: 3;
+
+    background: #000000CC;
+    color: white;
+
+    border-radius: 100%;
+
+    display: none;
+}
+
+#song_info {
+    width: 100%;
+    
+    display: flex;
+    flex-direction: column;
+
+    justify-content: space-between;
+}
+
+#song_info_strings {
+    line-height: 18vh;
+    padding: 4vh 0;
+}
+
+#song_artist {
+    color: #BBB;
+}
+
+#progressbar_div {
+    display: flex;
+    flex-direction: column;
+    gap: 4vh;
+}
+
+#progressbar_times {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    color: #999;
+}
+
+#progressbar {
+    height: 2vh;
+
+    display: flex;
+
+    background: #444;
+}
+
+#progressbar_current_bar {
+    height: 100%;
+
+    background: white;
+}
