@@ -1,7 +1,7 @@
 /* Font */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200..900&display=swap');
 
-html {
+body {
     background: black;
     color: white;
 
