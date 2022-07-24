@@ -76,11 +76,13 @@ function handlePlayerEvents(data) {
 // Every second increment progress
 setInterval(function(){ 
     try {
-        lastState.progress.current += 1000
+        if (lastState.progress.playing) {
+            lastState.progress.current += 1000
 
-        // If going over song duration, stays at the end instead of incrementing
-        if (lastState.progress.current >= lastState.progress.duration) {
-            lastState.progress.current = lastState.progress.duration
+            // If going over song duration, stays at the end instead of incrementing
+            if (lastState.progress.current >= lastState.progress.duration) {
+                lastState.progress.current = lastState.progress.duration
+            }
         }
 
         handleProgress(lastState.progress)
