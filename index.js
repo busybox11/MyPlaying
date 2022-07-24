@@ -44,11 +44,11 @@ spotifyWs.on('connect', function(connection) {
 })
 
 app.get('/', (req, res) => {
-    req.status(200).send('Hello World!')
+    res.status(200).send('Hello World!')
 })
 
 app.get('/playing/img', async (res, req) => {
-    req.status(200).send(await require('./templates/playing_img')(lastPlayingState))
+    res.status(200).send(await require('./templates/playing_img')(lastPlayingState))
 })
 
 spotifyWs.connect(`ws://${process.env.SPTWSS_URL}/`)
