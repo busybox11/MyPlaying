@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 var events = require('events')
+var path = require('path')
 
 const express = require(`express`)
 const expressWs = require(`@wll8/express-ws`)
@@ -40,6 +41,10 @@ spotifyWs.on('connect', function(connection) {
             }
         }
     })
+})
+
+app.get('/playing/img', async (res, req) => {
+    req.status(300).send(await require('./templates/playing_img')(lastPlayingState))
 })
 
 spotifyWs.connect(`ws://${process.env.SPTWSS_URL}/`)
