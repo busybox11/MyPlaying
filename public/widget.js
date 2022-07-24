@@ -27,7 +27,7 @@ const utils = {
     }
 }
 
-let socket = new WebSocket(`ws://${window.location.host}/playing`)
+let socket = new WebSocket(`ws${(window.location.protocol == 'https:') ? 's' : ''}://${window.location.host}${window.location.pathname.replace('widget.html', 'playing')}`)
 
 function handleProgress(progress) {
     try {
