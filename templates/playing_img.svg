@@ -17,7 +17,7 @@
                 background-color: #191414;
                 color: white;
                 border-radius: 1rem;
-                
+
                 display: flex;
                 padding: 1rem;
                 gap: 1rem;
@@ -85,6 +85,8 @@
 
                 line-height: 1.2rem;
             }
+
+            {ADD_IN_CSS}
         </style>
     </defs>
 

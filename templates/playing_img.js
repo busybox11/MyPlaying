@@ -2,13 +2,15 @@ require('dotenv').config()
 const fs = require('fs')
 const axios = require('axios')
 
-module.exports = function(playingObj, height=250, width=600) {
+module.exports = function(playingObj, query, height=250, width=600) {
     return new Promise(async (resolve, reject) =>  {
         fs.readFile('./templates/playing_img.svg', 'utf-8', async function (err, fileContent) {
             if (err) {
                 console.log(err)
                 return
             }
+
+            var addInCSS = ""
           
             var replaced = fileContent
            
@@ -34,6 +36,16 @@ module.exports = function(playingObj, height=250, width=600) {
                 playingIcon = `<img src="${"data:" + playingIconImage.headers["content-type"] + ";base64," + rawPlayingIconImage}" height="16" />`
             }
             replaced = replaced.replaceAll('{PLAYING_ICON}', playingIcon)
+
+            if (Object.keys(query).includes('hideGithubLogo')) {
+                addInCSS += `
+                #github_logo {
+                    display: none;
+                }
+                `
+            }
+
+            replaced = replaced.replaceAll('{ADD_IN_CSS}', addInCSS)
 
             resolve(replaced)
         })

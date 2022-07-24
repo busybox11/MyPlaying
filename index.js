@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
 app.get('/playing/img', async (req, res) => {
     res.setHeader('cache-control', 'public, max-age=0, must-revalidate')
     res.setHeader('content-type', 'image/svg+xml; charset=utf-8')
-    res.status(200).send(await require('./templates/playing_img')(lastPlayingState))
+    res.status(200).send(await require('./templates/playing_img')(lastPlayingState, req.query))
 })
 
 spotifyWs.connect(`ws://${process.env.SPTWSS_URL}/`)
