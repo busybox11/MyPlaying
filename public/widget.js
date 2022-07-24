@@ -27,7 +27,7 @@ const utils = {
     }
 }
 
-let socket = new WebSocket(`ws${(window.location.protocol == 'https:') ? 's' : ''}://${window.location.host}${window.location.pathname.replace('widget.html', 'playing')}`)
+var socket
 
 function handleProgress(progress) {
     try {
@@ -89,14 +89,35 @@ setInterval(function(){
     } catch(e) {}
 }, 1000)
 
-socket.onopen = function(event) {
-    console.log('[WS] Connected')
-}
+function initializeSocket() {
+    socket = new WebSocket(`ws${(window.location.protocol == 'https:') ? 's' : ''}://${window.location.host}${window.location.pathname.replace('widget.html', 'playing')}`)
 
-socket.onmessage = function(event) {
-    const msgData = JSON.parse(event.data)
+    socket.onopen = function(event) {
+        console.log('[WS] Connected')
+    }
 
-    if (msgData.type == "player") {
-        handlePlayerEvents(msgData)
+    socket.onclose = function(event) {
+        console.warn('[WS] Closed', event)
+        setTimeout(function () {
+            initializeSocket()
+        }, 1000)
+    }
+
+    socket.onerror = function(event) {
+        console.warn('[WS] Error', event)
+        socket.close()
+        setTimeout(function () {
+            initializeSocket()
+        }, 1000)
+    }
+
+    socket.onmessage = function(event) {
+        const msgData = JSON.parse(event.data)
+
+        if (msgData.type == "player") {
+            handlePlayerEvents(msgData)
+        }
     }
 }
+
+initializeSocket()
