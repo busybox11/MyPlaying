@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
     res.status(200).send('Hello World!')
 })
 
-app.get('/playing/img', async (res, req) => {
+app.get('/playing/img', async (req, res) => {
     res.status(200).send(await require('./templates/playing_img')(lastPlayingState))
 })
 
