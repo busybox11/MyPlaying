@@ -48,6 +48,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/playing/img', async (req, res) => {
+    res.setHeader('content-type', 'image/svg+xml; charset=utf-8')
     res.status(200).send(await require('./templates/playing_img')(lastPlayingState))
 })
 
