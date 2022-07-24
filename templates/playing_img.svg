@@ -13,13 +13,11 @@
                 color: unset;
             }
 
-            #main_frame {
+            #content {
                 background-color: #191414;
                 color: white;
                 border-radius: 1rem;
-            }
-
-            #content {
+                
                 display: flex;
                 padding: 1rem;
                 gap: 1rem;
