@@ -1,5 +1,7 @@
 const DOM = {
     songImg: document.getElementById('img_song'),
+    songImgLink: document.getElementById('img_song_link'),
+    songInfoStrings: document.getElementById('song_info_strings'),
     title: document.getElementById('song_title'),
     artist: document.getElementById('song_artist'),
     progress: {
@@ -54,6 +56,8 @@ function handleProgress(progress) {
     } catch(e) {
         console.error(e)
         DOM.progress.container.style.display = 'none'
+        DOM.songImgLink.href = "#"
+        DOM.songInfoStrings.href = "#"
     }
 }
 
@@ -66,6 +70,9 @@ function handlePlayerEvents(data) {
 
         DOM.songImg.src = song.meta.image
         DOM.songImg.style.display = 'block'
+
+        DOM.songImgLink.href = song.meta.url
+        DOM.songInfoStrings.href = song.meta.url
 
         handleProgress(song.progress)
     } catch(e) { console.error(e) }

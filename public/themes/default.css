@@ -92,6 +92,8 @@ body {
 
 #song_info_strings {
     line-height: 16vh;
+    text-decoration: none;
+    color: unset;
 }
 
 #song_title {
