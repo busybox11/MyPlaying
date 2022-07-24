@@ -59,6 +59,11 @@ var spotifyEvent = new events.EventEmitter()
 
 app.ws(`/playing`, (ws, req) => {
     function sendPlayingSong() {
+        if (ws.readyState == 3) {
+            ws.close()
+            return
+        }
+
         ws.send(JSON.stringify({
             success: true,
             type: "player",
