@@ -1,11 +1,15 @@
+const urlParams = new URLSearchParams(window.location.search)
+
 const DOM = {
     songImg: document.getElementById('img_song'),
     songImgLink: document.getElementById('img_song_link'),
     songInfoStrings: document.getElementById('song_info_strings'),
     title: document.getElementById('song_title'),
     artist: document.getElementById('song_artist'),
+    album: document.getElementById('song_album'),
     progress: {
         container: document.getElementById('progressbar_div'),
+        timestampsCont: document.getElementById('progressbar_times'),
         current: document.getElementById('progressbar_current_time'),
         fullDuration: document.getElementById('progressbar_full_duration'),
         bar: document.getElementById('progressbar_current_bar')
@@ -30,6 +34,18 @@ const utils = {
 }
 
 var socket
+
+function initWidgetConfig(config) {
+    // Init widget with specified configuration.
+    // At load time, URL parameters are used. Though the widget might be updated
+    // later, so it should also work with changing configuration
+
+    DOM.album.classList[config.showAlbum == "false" ? 'add' : 'remove']('hidden')
+    DOM.progress.timestampsCont.classList[config.showProgress == "false" ? 'add' : 'remove']('hidden')
+    DOM.progress.bar.classList[config.progressTransition == "false" ? 'add' : 'remove']('no-transition')
+}
+
+initWidgetConfig(Object.fromEntries(urlParams.entries()))
 
 function handleProgress(progress) {
     try {
@@ -67,6 +83,7 @@ function handlePlayerEvents(data) {
     try {
         DOM.title.innerText = song.title
         DOM.artist.innerText = song.artist
+        DOM.album.innerText = song.album
 
         DOM.songImg.src = song.meta.image
         DOM.songImg.style.display = 'block'

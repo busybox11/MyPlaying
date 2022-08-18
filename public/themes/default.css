@@ -105,12 +105,18 @@ body {
     -webkit-box-orient: vertical;
 }
 
-#song_artist {
+#song_artist,
+#song_album {
     color: #BBB;
     white-space: nowrap;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: clip;
     text-overflow: ellipsis;
     display: block;
+}
+
+#song_album {
+    margin-top: -0.3rem;
 }
 
 #progressbar_div {
