@@ -40,7 +40,12 @@ function initWidgetConfig(config) {
     // At load time, URL parameters are used. Though the widget might be updated
     // later, so it should also work with changing configuration
 
+    // Showing albuum adds another line to the widget.
+    // When showing a two-line tall track name, the progression bar will be hidden because
+    // of overflowing. We'll limit track lines number to be only one to prevent this.
     DOM.album.classList[config.showAlbum == "false" ? 'add' : 'remove']('hidden')
+    DOM.title.classList[config.showAlbum == "false" ? 'remove' : 'add']('single-line')
+
     DOM.progress.timestampsCont.classList[config.showProgress == "false" ? 'add' : 'remove']('hidden')
     DOM.progress.bar.classList[config.progressTransition == "false" ? 'add' : 'remove']('no-transition')
 }

@@ -5,3 +5,8 @@
 .no-transition {
     transition: none !important;
 }
+
+.single-line {
+    line-clamp: 1 !important;
+    -webkit-line-clamp: 1 !important;
+}
