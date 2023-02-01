@@ -103,9 +103,9 @@ function handlePlayerEvents(data) {
     const state = data.data
 
     try {
-        DOM.title.innerText = state.title
-        DOM.artist.innerText = state.artist
-        DOM.album.innerText = state.album
+        DOM.title.innerText = state.title ?? 'No playing info'
+        DOM.artist.innerText = state.artist ?? 'No player is currently active'
+        DOM.album.innerText = state.album ?? ''
 
         DOM.songImg.src = state.meta.image
         DOM.songImg.style.display = 'block'

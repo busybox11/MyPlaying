@@ -154,5 +154,3 @@ body {
 #progressbar_current_bar.fast_animation {
     transition: width 0.25s linear;
 }
-
-}
