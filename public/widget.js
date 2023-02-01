@@ -40,7 +40,7 @@ function initWidgetConfig(config) {
     // At load time, URL parameters are used. Though the widget might be updated
     // later, so it should also work with changing configuration
 
-    // Showing albuum adds another line to the widget.
+    // Showing album adds another line to the widget.
     // When showing a two-line tall track name, the progression bar will be hidden because
     // of overflowing. We'll limit track lines number to be only one to prevent this.
     DOM.album.classList[config.showAlbum == "false" ? 'add' : 'remove']('hidden')
@@ -52,7 +52,7 @@ function initWidgetConfig(config) {
 
 initWidgetConfig(Object.fromEntries(urlParams.entries()))
 
-function handleProgress(progress) {
+function handleProgress(progress, currentState, lastState) {
     try {
         DOM.progress.container.style.display = 'flex'
         if (progress.playing) {
@@ -64,7 +64,7 @@ function handleProgress(progress) {
         let currentDate = new Date(progress.current)
         let fullDurationDate = new Date(progress.duration)
 
-        // Timetamps are longer than one hour, we should show the hour duration in the time string
+        // Timestamps are longer than one hour, we should show the hour duration in the time string
         let sliceDateOffset = 14
         if (utils.nonZeroHour([currentDate, fullDurationDate])) {
             sliceDateOffset = 11
@@ -74,6 +74,23 @@ function handleProgress(progress) {
         DOM.progress.fullDuration.innerText = fullDurationDate.toISOString().slice(sliceDateOffset, 19)
 
         DOM.progress.bar.style.width = `${progress.current * 100 / progress.duration}%`
+
+        if (lastState && currentState) {
+            let modifierClass
+
+            if (lastState.meta?.url != currentState.meta?.url) {
+                // Don't show transition on progress bar if this is a new song
+                modifierClass = 'no-transition'
+            } else {
+                // If the song is the same, it has been seeked
+                // Show a quicker transition
+                modifierClass = 'fast_animation'
+            }
+
+            DOM.progress.bar.classList.add(modifierClass)
+            DOM.progress.bar.offsetHeight // Trigger a reflow, flushing the CSS changes
+            DOM.progress.bar.classList.remove(modifierClass)
+        }
     } catch(e) {
         console.error(e)
         DOM.progress.container.style.display = 'none'
@@ -83,20 +100,20 @@ function handleProgress(progress) {
 }
 
 function handlePlayerEvents(data) {
-    const song = data.data
+    const state = data.data
 
     try {
-        DOM.title.innerText = song.title
-        DOM.artist.innerText = song.artist
-        DOM.album.innerText = song.album
+        DOM.title.innerText = state.title
+        DOM.artist.innerText = state.artist
+        DOM.album.innerText = state.album
 
-        DOM.songImg.src = song.meta.image
+        DOM.songImg.src = state.meta.image
         DOM.songImg.style.display = 'block'
 
-        DOM.songImgLink.href = song.meta.url
-        DOM.songInfoStrings.href = song.meta.url
+        DOM.songImgLink.href = state.meta.url
+        DOM.songInfoStrings.href = state.meta.url
 
-        handleProgress(song.progress)
+        handleProgress(state.progress, state, lastState)
     } catch(e) { console.error(e) }
 
     lastState = data.data
