@@ -24,6 +24,10 @@ module.exports = function(playingObj, query, height=250, width=600) {
 
             replaced = replaced.replaceAll('{PLAYING_TEXT}', (playingObj.progress.playing) ? 'Now playing on Spotify' : 'Last played song')
             
+            // browsers dont directly render '&' as a single character, using '&amp;' instead does
+            // for when the track title or artist name consists of one
+            replaced = replaced.replaceAll('&', '&amp;')
+            
             const coverImage = await axios.get(playingObj.meta.image, {responseType: 'arraybuffer'})
             const rawCoverImage = Buffer.from(coverImage.data).toString('base64')
             const base64CoverImage = "data:" + coverImage.headers["content-type"] + ";base64," + rawCoverImage
