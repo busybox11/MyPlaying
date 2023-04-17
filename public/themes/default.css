@@ -107,7 +107,7 @@ body {
 
 #song_artist,
 #song_album {
-    color: #BBB;
+    color: #FFF;
     white-space: nowrap;
     overflow-x: hidden;
     overflow-y: clip;
@@ -116,7 +116,8 @@ body {
 }
 
 #song_album {
-    margin-top: -0.3rem;
+    color: #BBB;
+    margin-top: -0.1rem;
 }
 
 #progressbar_div {
