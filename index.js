@@ -15,10 +15,10 @@ let lastPlayingState = {}
 // Connect to spotify WS and create event
 const spotifyWs = new WebSocketClient()
 
-spotifyWs.on('connect', function(connection) {
+spotifyWs.on('connect', function (connection) {
     console.log('[SpotifyWS] Connected')
 
-    connection.on('message', function(message) {
+    connection.on('message', function (message) {
         if (message.type === 'utf8') {
             const msgData = JSON.parse(message.utf8Data)
 
@@ -35,7 +35,7 @@ spotifyWs.on('connect', function(connection) {
                         artist: msgData.artist,
                         album: msgData.album
                     }
-                } catch(e) {}
+                } catch (e) { }
 
                 spotifyEvent.emit('updatedSong')
             }
@@ -96,8 +96,17 @@ app.ws(`/playing`, (ws, req) => {
     spotifyEvent.on('updatedSong', sendPlayingSong)
 })
 
+app.get('/playing', async (req, res) => {
+    res.setHeader('cache-control', 'public, max-age=0, must-revalidate')
+    res.setHeader('content-type', 'application/json; charset=utf-8')
+    res.status(200).send(JSON.stringify({
+        success: true,
+        data: lastPlayingState
+    }))
+})
+
 // Every second increment lastPlayingState progress
-setInterval(function(){ 
+setInterval(function () {
     try {
         lastPlayingState.progress.current += 1000
 
@@ -105,7 +114,7 @@ setInterval(function(){
         if (lastPlayingState.progress.current >= lastPlayingState.progress.duration) {
             lastPlayingState.progress.current = lastPlayingState.progress.duration
         }
-    } catch(e) {}
+    } catch (e) { }
 }, 1000)
 
 app.use(express.static('public'))
