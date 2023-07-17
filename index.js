@@ -58,7 +58,7 @@ app.get('/playing/badge', async (req, res) => {
     res.setHeader('content-type', 'image/svg+xml; charset=utf-8')
 
     // Use badge from img.shields.io
-    res.redirect(`https://img.shields.io/badge/${encodeURIComponent(lastPlayingState.artist + ' - ' + lastPlayingState.title)}-1ed760?&logo=spotify`)
+    res.redirect(`https://img.shields.io/badge/${encodeURIComponent(lastPlayingState.artist + ' - ' + lastPlayingState.title)}-1ed760?&style=for-the-badge&logo=spotify&logoColor=white`)
 })
 
 spotifyWs.connect(`ws://${process.env.SPTWSS_URL}/`)
