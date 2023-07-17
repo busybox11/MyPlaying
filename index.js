@@ -53,6 +53,14 @@ app.get('/playing/img', async (req, res) => {
     res.status(200).send(await require('./templates/playing_img')(lastPlayingState, req.query))
 })
 
+app.get('/playing/badge', async (req, res) => {
+    res.setHeader('cache-control', 'public, max-age=0, must-revalidate')
+    res.setHeader('content-type', 'image/svg+xml; charset=utf-8')
+
+    // Use badge from img.shields.io
+    res.redirect(`https://img.shields.io/badge/${encodeURIComponent(lastPlayingState.artist + ' - ' + lastPlayingState.title)}-1ed760?&logo=spotify`)
+})
+
 spotifyWs.connect(`ws://${process.env.SPTWSS_URL}/`)
 
 var spotifyEvent = new events.EventEmitter()
