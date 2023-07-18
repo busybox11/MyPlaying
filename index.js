@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 var events = require('events')
-var path = require('path')
+const fetch = require('node-fetch')
 
 const express = require(`express`)
 const expressWs = require(`@wll8/express-ws`)
@@ -57,8 +57,26 @@ app.get('/playing/badge', async (req, res) => {
     res.setHeader('cache-control', 'public, max-age=0, must-revalidate')
     res.setHeader('content-type', 'image/svg+xml; charset=utf-8')
 
+    const replaceCharacters = (str) => {
+        const replacements = {
+            ' ': '_',
+            '-': '--',
+            '_': '__',
+        };
+
+        return str.replace(/[-_ ]/g, (character) => {
+            return replacements[character] || character;
+        });
+    };
+
+    const newArtist = replaceCharacters(lastPlayingState.artist);
+    const newTitle = replaceCharacters(lastPlayingState.title);
+
     // Use badge from img.shields.io
-    res.redirect(`https://img.shields.io/badge/${encodeURIComponent(lastPlayingState.artist + ' - ' + lastPlayingState.title)}-1ed760?&style=for-the-badge&logo=spotify&logoColor=white`)
+    const badgeURL = `https://img.shields.io/badge/${encodeURIComponent(newArtist + ' - ' + newTitle)}-1ed760?&style=for-the-badge&logo=spotify&logoColor=white`
+    // Download badge from URL and send it
+    const badge = await fetch(badgeURL).then(res => res.buffer())
+    res.status(200).send(badge)
 })
 
 spotifyWs.connect(`ws://${process.env.SPTWSS_URL}/`)
