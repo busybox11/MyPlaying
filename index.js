@@ -134,11 +134,13 @@ app.get('/playing', async (req, res) => {
 // Every second increment lastPlayingState progress
 setInterval(function () {
     try {
-        lastPlayingState.progress.current += 1000
+        if (lastPlayingState.progress.playing) {
+            lastPlayingState.progress.current += 1000
 
-        // If going over song duration, stays at the end instead of incrementing
-        if (lastPlayingState.progress.current >= lastPlayingState.progress.duration) {
-            lastPlayingState.progress.current = lastPlayingState.progress.duration
+            // If going over song duration, stays at the end instead of incrementing
+            if (lastPlayingState.progress.current >= lastPlayingState.progress.duration) {
+                lastPlayingState.progress.current = lastPlayingState.progress.duration
+            }
         }
     } catch (e) { }
 }, 1000)
