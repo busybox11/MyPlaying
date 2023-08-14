@@ -6,7 +6,7 @@ const fetch = require('node-fetch')
 const express = require(`express`)
 const expressWs = require(`@wll8/express-ws`)
 var WebSocketClient = require('websocket').client;
-const { app, wsRoute } = expressWs(express())
+const { app } = expressWs(express())
 
 const PORT = process.env.SERVER_PORT || 7089
 
@@ -43,6 +43,10 @@ spotifyWs.on('connect', function (connection) {
     })
 })
 
+app.set('view engine', 'ejs');
+
+app.use(express.static('public'))
+
 app.get('/', (req, res) => {
     res.status(200).send('Hello World!')
 })
@@ -52,6 +56,17 @@ app.get('/playing/img', async (req, res) => {
     res.setHeader('content-type', 'image/svg+xml; charset=utf-8')
     res.status(200).send(await require('./templates/playing_img')(lastPlayingState, req.query))
 })
+
+function widgetHandler(req, res) {
+    res.setHeader('cache-control', 'public, max-age=0, must-revalidate')
+    res.setHeader('content-type', 'text/html; charset=utf-8')
+    res.status(200).render('widget', {
+        lastPlayingState: lastPlayingState
+    })
+}
+
+app.get('/widget', async (req, res) => widgetHandler(req, res))
+app.get('/widget.html', async (req, res) => widgetHandler(req, res))
 
 app.get('/playing/badge', async (req, res) => {
     res.setHeader('cache-control', 'public, max-age=0, must-revalidate')
@@ -144,8 +159,6 @@ setInterval(function () {
         }
     } catch (e) { }
 }, 1000)
-
-app.use(express.static('public'))
 
 app.listen(PORT)
 console.log(`[Server] Listening on :${PORT}`)
