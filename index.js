@@ -61,7 +61,8 @@ function widgetHandler(req, res) {
     res.setHeader('cache-control', 'public, max-age=0, must-revalidate')
     res.setHeader('content-type', 'text/html; charset=utf-8')
     res.status(200).render('widget', {
-        lastPlayingState: lastPlayingState
+        lastPlayingState: lastPlayingState,
+        analyticsScript: process.env.ANALYTICS_SCRIPT || ''
     })
 }
 
