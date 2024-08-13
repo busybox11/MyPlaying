@@ -180,12 +180,9 @@ function handlePlayerEvents(data) {
 
   try {
     // If song preview changed
-    if (
-      state?.meta?.preview &&
-      state.meta.preview != lastState?.meta?.preview
-    ) {
+    if (state.meta.preview != lastState?.meta?.preview) {
       // Stop preview audio if it's playing
-      if (!previewAudio.paused) {
+      if (previewAudio && !previewAudio.paused) {
         previewAudio.pause();
         previewAudio.currentTime = 0;
       }
