@@ -1,9 +1,15 @@
 const urlParams = new URLSearchParams(window.location.search);
 
 const DOM = {
+  songImgContainer: document.getElementById("img_container"),
   songImg: document.getElementById("img_song"),
   songImgLink: document.getElementById("img_song_link"),
   songInfoStrings: document.getElementById("song_info_strings"),
+  previewPlayBtn: document.getElementById("preview_play_btn"),
+  previewPlayBtnMuteIcon: document.getElementById("preview_play_btn_muteicon"),
+  previewPlayBtnSoundIcon: document.getElementById(
+    "preview_play_btn_soundicon"
+  ),
   title: document.getElementById("song_title"),
   artist: document.getElementById("song_artist"),
   album: document.getElementById("song_album"),
@@ -57,6 +63,46 @@ function initWidgetConfig(config) {
 }
 
 initWidgetConfig(Object.fromEntries(urlParams.entries()));
+
+let previewAudio = new Audio();
+
+function handlePreviewState() {
+  const isPreviewPlaying = !previewAudio.paused;
+
+  const icon = isPreviewPlaying
+    ? DOM.previewPlayBtnSoundIcon
+    : DOM.previewPlayBtnMuteIcon;
+  const otherIcon = isPreviewPlaying
+    ? DOM.previewPlayBtnMuteIcon
+    : DOM.previewPlayBtnSoundIcon;
+
+  icon.style.display = "block";
+  otherIcon.style.display = "none";
+
+  DOM.previewPlayBtn.classList.toggle("playing", isPreviewPlaying);
+}
+
+previewAudio.addEventListener("play", function () {
+  handlePreviewState();
+});
+
+previewAudio.addEventListener("pause", function () {
+  handlePreviewState();
+});
+
+previewAudio.addEventListener("ended", function () {
+  handlePreviewState();
+});
+
+DOM.previewPlayBtn.addEventListener("click", function () {
+  if (previewAudio.paused) {
+    previewAudio.src = lastState.meta.preview;
+    previewAudio.play();
+  } else {
+    previewAudio.pause();
+    previewAudio.currentTime = 0;
+  }
+});
 
 function handleProgress(progress, currentState, lastState) {
   try {
@@ -119,6 +165,12 @@ function setPlayerDOMState(state) {
   DOM.songImgLink.href = state.meta.url;
   DOM.songInfoStrings.href = state.meta.url;
 
+  if (state.meta.preview) {
+    DOM.songImgContainer.classList.add("can_preview");
+  } else {
+    DOM.songImgContainer.classList.remove("can_preview");
+  }
+
   handleProgress(state.progress, state, lastState);
 }
 
@@ -127,6 +179,19 @@ function handlePlayerEvents(data) {
   const state = data.data;
 
   try {
+    // If song preview changed
+    if (
+      state?.meta?.preview &&
+      state.meta.preview != lastState?.meta?.preview
+    ) {
+      // Stop preview audio if it's playing
+      if (!previewAudio.paused) {
+        previewAudio.pause();
+        previewAudio.currentTime = 0;
+      }
+    }
+
+    // If image changed
     if (state?.meta?.image && state.meta.image != lastState?.meta?.image) {
       console.log("Image changed");
       setTimeout(function () {

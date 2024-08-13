@@ -64,14 +64,9 @@ body {
     position: absolute;
 }
 
-#img_pause_icon {
+.overlay_icon {
     height: 25vh;
     padding: 5vh;
-
-    position: absolute;
-    bottom: 5vh;
-    right: 5vh;
-    z-index: 3;
 
     background: #000000CC;
     color: white;
@@ -81,6 +76,39 @@ body {
     display: block;
 
     transition: opacity 0.1s ease-out;
+
+    z-index: 3;
+}
+
+#img_pause_icon {
+    position: absolute;
+    bottom: 5vh;
+    right: 5vh;
+}
+
+#preview_play_btn {
+    position: absolute;
+    top: 5vh;
+    right: 5vh;
+
+    display: flex;
+
+    outline: none;
+    border: none;
+
+    cursor: pointer;
+
+    padding: 0;
+    transition: none;
+    opacity: 0;
+}
+
+#preview_play_btn.playing {
+    opacity: 1;
+}
+
+#img_container:hover #preview_play_btn.can_preview {
+    opacity: 1;
 }
 
 #song_info {
