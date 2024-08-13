@@ -79,7 +79,9 @@ body {
 
     border-radius: 100%;
 
-    display: none;
+    display: block;
+
+    transition: opacity 0.1s ease-out;
 }
 
 #song_info {

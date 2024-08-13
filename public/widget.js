@@ -22,7 +22,7 @@ let lastState = {}
 const utils = {
     nonZeroHour: (dates) => {
         let result = false
-        for (date of dates) {
+        for (const date of dates) {
             if (date.getHours() != 1) {
                 result = true
                 break
@@ -56,11 +56,11 @@ function handleProgress(progress, currentState, lastState) {
     try {
         DOM.progress.container.style.display = 'flex'
         if (progress.playing) {
-            DOM.pauseIcon.style.display = 'none'
+            DOM.pauseIcon.style.opacity = '0'
         } else {
-            DOM.pauseIcon.style.display = 'block'
+            DOM.pauseIcon.style.opacity = '1'
         }
-
+        
         let currentDate = new Date(progress.current)
         let fullDurationDate = new Date(progress.duration)
 

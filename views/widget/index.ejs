@@ -15,14 +15,13 @@
     <div id="img_container">
         <svg id="img_pause_icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="feather feather-pause"
-            style="display: <%= lastPlayingState?.progress?.playing ? 'none' : 'block' %>;">
+            class="feather feather-pause" style="opacity: <%= lastPlayingState?.progress?.playing ? '0' : '1' %>;">
             <rect x="6" y="4" width="4" height="16"></rect>
             <rect x="14" y="4" width="4" height="16"></rect>
         </svg>
         <a href="#" target="_blank" id="img_song_link">
             <img id="img_song" src="<%= lastPlayingState?.meta?.image || 'https://i.imgur.com/5nltiUd.png' %>"
-                style="display: <%= lastPlayingState?.meta?.image ? 'block' : 'none' %>;" />
+                style="opacity: <%= lastPlayingState?.meta?.image ? '1' : '0' %>;" />
         </a>
         <svg id="img_placeholder" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
