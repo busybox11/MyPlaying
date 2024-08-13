@@ -68,8 +68,9 @@ body {
     height: 25vh;
     padding: 5vh;
 
-    background: #000000CC;
+    background: #000000AA;
     color: white;
+    backdrop-filter: blur(8px);
 
     border-radius: 100%;
 
@@ -101,6 +102,12 @@ body {
     padding: 0;
     transition: none;
     opacity: 0;
+}
+
+#preview_play_btn:hover > * {
+    opacity: 1;
+    background: #000000CC;
+    box-shadow: 0 0 0px 1px #ffffff80;
 }
 
 #preview_play_btn.playing {
