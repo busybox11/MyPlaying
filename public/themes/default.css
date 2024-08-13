@@ -61,7 +61,6 @@ body {
     width: 100%;
     object-fit: cover;
     z-index: 2;
-    display: none;
     position: absolute;
 }
 

@@ -21,7 +21,7 @@
         </svg>
         <a href="#" target="_blank" id="img_song_link">
             <img id="img_song" src="<%= lastPlayingState?.meta?.image || 'https://i.imgur.com/5nltiUd.png' %>"
-                style="opacity: <%= lastPlayingState?.meta?.image ? '1' : '0' %>;" />
+                style="display: <%= lastPlayingState?.meta?.image ? 'block' : 'none' %>;" />
         </a>
         <svg id="img_placeholder" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"

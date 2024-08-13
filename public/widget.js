@@ -111,21 +111,50 @@ function handleProgress(progress, currentState, lastState) {
   }
 }
 
+function setPlayerDOMState(state) {
+  DOM.title.innerText = state.title ?? "No playing info";
+  DOM.artist.innerText = state.artist ?? "No player is currently active";
+  DOM.album.innerText = state.album ?? "";
+
+  DOM.songImgLink.href = state.meta.url;
+  DOM.songInfoStrings.href = state.meta.url;
+
+  handleProgress(state.progress, state, lastState);
+}
+
+let hasCompletedImage = true;
 function handlePlayerEvents(data) {
   const state = data.data;
 
   try {
-    DOM.title.innerText = state.title ?? "No playing info";
-    DOM.artist.innerText = state.artist ?? "No player is currently active";
-    DOM.album.innerText = state.album ?? "";
+    if (state?.meta?.image && state.meta.image != lastState?.meta?.image) {
+      console.log("Image changed");
+      setTimeout(function () {
+        if (hasCompletedImage) return;
 
-    DOM.songImg.src = state.meta.image;
-    DOM.songImg.style.display = "block";
+        setPlayerDOMState(state);
+        DOM.songImg.style.display = "none";
+      }, 700);
 
-    DOM.songImgLink.href = state.meta.url;
-    DOM.songInfoStrings.href = state.meta.url;
+      const newImg = new Image();
+      hasCompletedImage = false;
+      newImg.src = state.meta.image;
+      newImg.id = "img_song";
+      newImg.onload = function () {
+        hasCompletedImage = true;
+        setPlayerDOMState(state);
 
-    handleProgress(state.progress, state, lastState);
+        DOM.songImgLink.replaceChildren(newImg);
+        DOM.songImg = newImg;
+      };
+
+      // Will naturally resolve to the other case on the next tick
+      // in case the image doesn't load before it
+    } else {
+      if (!hasCompletedImage) return;
+
+      setPlayerDOMState(state);
+    }
   } catch (e) {
     console.error(e);
   }
