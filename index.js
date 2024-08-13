@@ -28,7 +28,8 @@ spotifyWs.on('connect', function (connection) {
                         meta: {
                             source: "spotify",
                             url: `https://open.spotify.com/track/${msgData.id}`,
-                            image: msgData.albumArt
+                            image: msgData.albumArt,
+                            preview: msgData.preview
                         },
                         progress: msgData.progress,
                         title: msgData.name,
