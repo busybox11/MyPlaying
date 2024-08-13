@@ -165,10 +165,10 @@ function setPlayerDOMState(state) {
   DOM.songImgLink.href = state.meta.url;
   DOM.songInfoStrings.href = state.meta.url;
 
-  if (state.meta.preview) {
-    DOM.songImgContainer.classList.add("can_preview");
+  if (Boolean(state.meta.preview)) {
+    DOM.previewPlayBtn.classList.add("can_preview");
   } else {
-    DOM.songImgContainer.classList.remove("can_preview");
+    DOM.previewPlayBtn.classList.remove("can_preview");
   }
 
   handleProgress(state.progress, state, lastState);
