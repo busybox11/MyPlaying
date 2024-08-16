@@ -157,7 +157,7 @@ function handleProgress(progress, currentState, lastState) {
   }
 }
 
-function setPlayerDOMState(state) {
+function setPlayerDOMState(state, targetLastState) {
   DOM.title.innerText = state.title ?? "No playing info";
   DOM.artist.innerText = state.artist ?? "No player is currently active";
   DOM.album.innerText = state.album ?? "";
@@ -171,12 +171,13 @@ function setPlayerDOMState(state) {
     DOM.previewPlayBtn.classList.remove("can_preview");
   }
 
-  handleProgress(state.progress, state, lastState);
+  handleProgress(state.progress, state, targetLastState);
 }
 
 let hasCompletedImage = true;
 function handlePlayerEvents(data) {
   const state = data.data;
+  const targetLastState = Object.assign({}, lastState);
 
   try {
     // If song preview changed
@@ -194,7 +195,7 @@ function handlePlayerEvents(data) {
       setTimeout(function () {
         if (hasCompletedImage) return;
 
-        setPlayerDOMState(state);
+        setPlayerDOMState(state, targetLastState);
         DOM.songImg.style.display = "none";
       }, 700);
 
@@ -204,7 +205,7 @@ function handlePlayerEvents(data) {
       newImg.id = "img_song";
       newImg.onload = function () {
         hasCompletedImage = true;
-        setPlayerDOMState(state);
+        setPlayerDOMState(state, targetLastState);
 
         DOM.songImgLink.replaceChildren(newImg);
         DOM.songImg = newImg;
@@ -215,7 +216,7 @@ function handlePlayerEvents(data) {
     } else {
       if (!hasCompletedImage) return;
 
-      setPlayerDOMState(state);
+      setPlayerDOMState(state, targetLastState);
     }
   } catch (e) {
     console.error(e);
