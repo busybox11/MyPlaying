@@ -96,7 +96,20 @@ app.get('/playing/badge', async (req, res) => {
     res.status(200).send(badge)
 })
 
-spotifyWs.connect(`ws://${process.env.SPTWSS_URL}/`)
+function connectSpotifyWs() {
+    spotifyWs.connect(`ws://${process.env.SPTWSS_URL}/`, function (err) {
+        if (err) {
+            console.error('[SpotifyWS] Connection Error:', err)
+            setTimeout(connectSpotifyWs, 5000) // Retry after 5 seconds
+        }
+    })
+}
+spotifyWs.on('connectFailed', function (error) {
+    console.error('[SpotifyWS] Connect Failed:', error)
+    setTimeout(connectSpotifyWs, 5000) // Retry after 5 seconds
+})
+
+connectSpotifyWs()
 
 var spotifyEvent = new events.EventEmitter()
 
