@@ -191,3 +191,17 @@ body {
 #progressbar_current_bar.fast_animation {
     transition: width 0.25s linear;
 }
+
+#nowplaying_state_div {
+    display: flex;
+    gap: 6vh;
+    align-items: center;
+}
+
+#nowplaying_state_icon {
+    height: 8vh;
+}
+
+#nowplaying_state_div small {
+    color: #999;
+}

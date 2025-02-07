@@ -35,7 +35,7 @@
         <svg id="img_pause_icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="feather feather-pause overlay_icon"
-            style="opacity: <%= lastPlayingState?.progress?.playing ? '0' : '1' %>;">
+            style="opacity: <%= lastPlayingState?.progress === null || lastPlayingState?.progress?.playing ? '0' : '1' %>;">
             <rect x="6" y="4" width="4" height="16"></rect>
             <rect x="14" y="4" width="4" height="16"></rect>
         </svg>
@@ -73,6 +73,15 @@
             <div id="progressbar">
                 <div id="progressbar_current_bar"></div>
             </div>
+        </div>
+
+        <div id="nowplaying_state_div" style="display: none;">
+            <img id="nowplaying_state_icon" src="equaliser-animated-green.gif" />
+            <small>
+                Now playing on <small id="nowplaying_provider">
+                    <%= lastPlayingState?.meta?.source || '' %>
+                </small>
+            </small>
         </div>
     </div>
 

@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 
 type LastPlayingState =
-  import("../types/playingState").LastPlayingState<"spotify">;
+  import("../types/playingState").LastPlayingState<"Spotify">;
 
 type SpotifyMessageData = {
   type: string;
@@ -20,14 +20,22 @@ type SpotifyMessageData = {
 };
 
 export class SpotifyService {
-  private spotifyWs: WebSocket;
+  private spotifyWs!: WebSocket;
   private spotifyEvent: EventEmitter;
-  private lastPlayingState: LastPlayingState = {} as LastPlayingState;
+  private lastPlayingState: LastPlayingState | null = null;
+  private isIdle: boolean = false;
   private sptwssUrl: string;
+
+  public lastTickUpdate: number;
 
   constructor(sptwssUrl: string) {
     this.sptwssUrl = sptwssUrl;
     this.spotifyEvent = new EventEmitter();
+    this.lastTickUpdate = Date.now();
+
+    setInterval(() => {
+      this.tick();
+    }, 1000);
   }
 
   public connect(): void {
@@ -47,8 +55,48 @@ export class SpotifyService {
     });
   }
 
+  private tick() {
+    try {
+      if (this.lastPlayingState && this.lastPlayingState.progress?.playing) {
+        if (this.lastPlayingState.progress.current) {
+          this.lastPlayingState.progress.current += 1000;
+
+          const now = Date.now();
+
+          // If last tick was over 30 seconds ago, send resume event
+          if (now - this.lastTickUpdate > 1000 * 30) {
+            // console.log("[SpotifyWS] Resume");
+            this.spotifyEvent.emit("resume");
+            this.isIdle = false;
+          }
+          this.lastTickUpdate = now;
+        }
+
+        // If going over song duration, stays at the end instead of incrementing
+        if (
+          this.lastPlayingState.progress.current &&
+          this.lastPlayingState.progress.duration &&
+          this.lastPlayingState.progress.current >=
+            this.lastPlayingState.progress.duration
+        ) {
+          this.lastPlayingState.progress.current =
+            this.lastPlayingState.progress.duration;
+        }
+      }
+
+      // If last update was more than 30 seconds ago, send idle event
+      if (Date.now() - this.lastTickUpdate > 1000 * 30 && !this.isIdle) {
+        // console.log("[SpotifyWS] Idle");
+        this.spotifyEvent.emit("idle");
+        this.isIdle = true;
+      }
+    } catch (e) {}
+  }
+
   private onConnect(connection: any): void {
     console.log("[SpotifyWS] Connected");
+
+    this.lastTickUpdate = Date.now();
   }
 
   private onMessage(event: MessageEvent): void {
@@ -61,7 +109,7 @@ export class SpotifyService {
         try {
           this.lastPlayingState = {
             meta: {
-              source: "spotify",
+              source: "Spotify",
               url: `https://open.spotify.com/track/${msgData.id}`,
               image: msgData.albumArt,
               preview: msgData.preview || undefined,
@@ -80,7 +128,7 @@ export class SpotifyService {
     }
   }
 
-  public getLastPlayingState(): LastPlayingState {
+  public getLastPlayingState(): LastPlayingState | null {
     return this.lastPlayingState;
   }
 

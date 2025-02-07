@@ -20,6 +20,10 @@ const DOM = {
     fullDuration: document.getElementById("progressbar_full_duration"),
     bar: document.getElementById("progressbar_current_bar"),
   },
+  nowPlayingState: {
+    container: document.getElementById("nowplaying_state_div"),
+    provider: document.getElementById("nowplaying_provider"),
+  },
   pauseIcon: document.getElementById("img_pause_icon"),
 };
 
@@ -106,32 +110,44 @@ DOM.previewPlayBtn.addEventListener("click", function () {
 
 function handleProgress(progress, currentState, lastState) {
   try {
-    DOM.progress.container.style.display = "flex";
-    if (progress.playing) {
+    if (progress === null || progress?.playing) {
       DOM.pauseIcon.style.opacity = "0";
     } else {
       DOM.pauseIcon.style.opacity = "1";
     }
 
-    let currentDate = new Date(progress.current);
-    let fullDurationDate = new Date(progress.duration);
+    if (progress?.current) {
+      DOM.progress.container.style.display = "flex";
+      DOM.nowPlayingState.container.style.display = "none";
 
-    // Timestamps are longer than one hour, we should show the hour duration in the time string
-    let sliceDateOffset = 14;
-    if (utils.nonZeroHour([currentDate, fullDurationDate])) {
-      sliceDateOffset = 11;
+      let currentDate = new Date(progress.current);
+      let fullDurationDate = new Date(progress.duration);
+
+      // Timestamps are longer than one hour, we should show the hour duration in the time string
+      let sliceDateOffset = 14;
+      if (utils.nonZeroHour([currentDate, fullDurationDate])) {
+        sliceDateOffset = 11;
+      }
+
+      DOM.progress.current.innerText = currentDate
+        .toISOString()
+        .slice(sliceDateOffset, 19);
+      DOM.progress.fullDuration.innerText = fullDurationDate
+        .toISOString()
+        .slice(sliceDateOffset, 19);
+
+      DOM.progress.bar.style.width = `${
+        (progress.current * 100) / progress.duration
+      }%`;
+    } else {
+      DOM.progress.container.style.display = "none";
+
+      if (progress?.playing) {
+        DOM.nowPlayingState.container.style.display = "flex";
+      } else {
+        DOM.nowPlayingState.container.style.display = "none";
+      }
     }
-
-    DOM.progress.current.innerText = currentDate
-      .toISOString()
-      .slice(sliceDateOffset, 19);
-    DOM.progress.fullDuration.innerText = fullDurationDate
-      .toISOString()
-      .slice(sliceDateOffset, 19);
-
-    DOM.progress.bar.style.width = `${
-      (progress.current * 100) / progress.duration
-    }%`;
 
     if (lastState && currentState) {
       let modifierClass;
@@ -165,6 +181,8 @@ function setPlayerDOMState(state, targetLastState) {
   DOM.songImgLink.href = state.meta.url;
   DOM.songInfoStrings.href = state.meta.url;
 
+  DOM.nowPlayingState.provider.innerText = state.meta?.source;
+
   if (Boolean(state.meta.preview)) {
     DOM.previewPlayBtn.classList.add("can_preview");
   } else {
@@ -190,29 +208,36 @@ function handlePlayerEvents(data) {
     }
 
     // If image changed
-    if (state?.meta?.image && state.meta.image != lastState?.meta?.image) {
+    if (state.meta.image != lastState?.meta?.image) {
       console.log("Image changed");
-      setTimeout(function () {
-        if (hasCompletedImage) return;
 
-        setPlayerDOMState(state, targetLastState);
+      if (!state.meta.image) {
         DOM.songImg.style.display = "none";
-      }, 700);
+      } else {
+        DOM.songImg.style.display = "block";
 
-      const newImg = new Image();
-      hasCompletedImage = false;
-      newImg.src = state.meta.image;
-      newImg.id = "img_song";
-      newImg.onload = function () {
-        hasCompletedImage = true;
-        setPlayerDOMState(state, targetLastState);
+        setTimeout(function () {
+          if (hasCompletedImage) return;
 
-        DOM.songImgLink.replaceChildren(newImg);
-        DOM.songImg = newImg;
-      };
+          setPlayerDOMState(state, targetLastState);
+          DOM.songImg.style.display = "none";
+        }, 700);
 
-      // Will naturally resolve to the other case on the next tick
-      // in case the image doesn't load before it
+        const newImg = new Image();
+        hasCompletedImage = false;
+        newImg.src = state.meta.image;
+        newImg.id = "img_song";
+        newImg.onload = function () {
+          hasCompletedImage = true;
+          setPlayerDOMState(state, targetLastState);
+
+          DOM.songImgLink.replaceChildren(newImg);
+          DOM.songImg = newImg;
+        };
+
+        // Will naturally resolve to the other case on the next tick
+        // in case the image doesn't load before it
+      }
     } else {
       if (!hasCompletedImage) return;
 

@@ -1,6 +1,4 @@
 import "dotenv/config";
-import fs from "fs";
-import axios from "axios";
 import type { LastPlayingState } from "../types/playingState";
 
 interface QueryParams {
@@ -34,8 +32,14 @@ export default async function (
     process.env.SPOTIFY_PROFILE_URL || "https://open.spotify.com/"
   );
   replaced = replaced.replaceAll(
+    "{LASTFM_PROFILE_URL}",
+    `https://www.last.fm/user/${process.env.LASTFM_USER}/`
+  );
+  replaced = replaced.replaceAll(
     "{PLAYING_TEXT}",
-    playingObj.progress?.playing ? "Now playing on Spotify" : "Last played song"
+    playingObj.progress?.playing
+      ? `Now playing on ${playingObj.meta.source}`
+      : "Last played song"
   );
 
   // browsers dont directly render '&' as a single character, using '&amp;' instead does
@@ -43,45 +47,49 @@ export default async function (
   replaced = replaced.replaceAll("&", "&amp;");
 
   // Fetch and replace cover image
+  function errorCoverImage() {
+    replaced = replaced.replaceAll("{COVER_URL}", ""); // set to empty string to avoid broken image
+    addInCSS += `
+      #cover_img {
+        display: none;
+      }
+    `;
+  }
+
   try {
-    if (!playingObj.meta.image) {
-      return;
+    if (playingObj.meta.image) {
+      const coverImage = await fetch(playingObj.meta.image);
+      const rawCoverImage = Buffer.from(
+        await coverImage.arrayBuffer()
+      ).toString("base64");
+
+      const base64CoverImage =
+        "data:" +
+        coverImage.headers.get("content-type") +
+        ";base64," +
+        rawCoverImage;
+
+      replaced = replaced.replaceAll("{COVER_URL}", base64CoverImage);
+    } else {
+      errorCoverImage();
     }
-
-    const coverImage = await fetch(playingObj.meta.image);
-    const rawCoverImage = Buffer.from(await coverImage.arrayBuffer()).toString(
-      "base64"
-    );
-
-    const base64CoverImage =
-      "data:" +
-      coverImage.headers.get("content-type") +
-      ";base64," +
-      rawCoverImage;
-
-    replaced = replaced.replaceAll("{COVER_URL}", base64CoverImage);
   } catch (e) {
     console.error("Error fetching cover image", e);
-
-    replaced = replaced.replaceAll("{COVER_URL}", ""); // set to empty string to avoid broken image
+    errorCoverImage();
   }
 
   // Set playing icon
   let playingIcon = "";
   if (playingObj.progress?.playing) {
     try {
-      const playingIconImage = await axios.get(
-        "https://open.spotifycdn.com/cdn/images/equaliser-animated-green.f93a2ef4.gif",
-        { responseType: "arraybuffer" }
-      );
-      const rawPlayingIconImage = Buffer.from(playingIconImage.data).toString(
-        "base64"
-      );
+      const playingGifImgPath = "./public/equaliser-animated-green.gif";
+      const playingGifImgFile = Bun.file(playingGifImgPath);
+
+      const playingGifImg = await playingGifImgFile.arrayBuffer();
+      const base64PlayingGifImg = Buffer.from(playingGifImg).toString("base64");
+
       playingIcon = `<img src="${
-        "data:" +
-        playingIconImage.headers["content-type"] +
-        ";base64," +
-        rawPlayingIconImage
+        "data:image/gif;base64," + base64PlayingGifImg
       }" height="16" />`;
     } catch (e) {
       console.error("Error fetching playing icon", e);
@@ -93,11 +101,27 @@ export default async function (
   // Hide GitHub logo
   if (query?.hideGithubLogo) {
     addInCSS += `
-      #github_logo {
+      #github_logo_link {
         display: none;
       }
     `;
   }
+
+  const providers = {
+    "Last.fm": "lastfm",
+    Spotify: "spotify",
+  };
+  const currentProvider = playingObj.meta.source;
+  for (const [providerName, providerId] of Object.entries(providers)) {
+    if (providerName !== currentProvider) {
+      addInCSS += `
+        #${providerId}_logo_link {
+          display: none;
+        }
+      `;
+    }
+  }
+
   replaced = replaced.replaceAll("{ADD_IN_CSS}", addInCSS);
 
   return replaced;
