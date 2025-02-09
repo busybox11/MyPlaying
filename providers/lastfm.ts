@@ -32,7 +32,6 @@ export class LastFmService {
   }
 
   public startRefreshLoop() {
-    console.log("Start refresh loop");
     this.refreshLoop = setInterval(() => {
       this.refreshLastPlayingState();
     }, 1000 * 30); // Refresh every 30 seconds

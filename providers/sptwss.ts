@@ -103,27 +103,32 @@ export class SpotifyService {
     const message = event.data as string;
 
     if (typeof message === "string") {
-      const msgData: SpotifyMessageData = JSON.parse(message);
+      try {
+        const msgData: SpotifyMessageData = JSON.parse(message);
 
-      if (msgData.type === "updatedSong") {
-        try {
-          this.lastPlayingState = {
-            meta: {
-              source: "Spotify",
-              url: `https://open.spotify.com/track/${msgData.id}`,
-              image: msgData.albumArt,
-              preview: msgData.preview || undefined,
-            },
-            progress: msgData.progress,
-            title: msgData.name,
-            artist: msgData.artist,
-            album: msgData.album,
-          };
-        } catch (e) {
-          console.error("[SpotifyService] Error parsing message:", e);
+        if (msgData.type === "updatedSong") {
+          try {
+            this.lastPlayingState = {
+              meta: {
+                source: "Spotify",
+                url: `https://open.spotify.com/track/${msgData.id}`,
+                image: msgData.albumArt,
+                preview: msgData.preview || undefined,
+              },
+              progress: msgData.progress,
+              title: msgData.name,
+              artist: msgData.artist,
+              album: msgData.album,
+            };
+          } catch (e) {
+            console.error("[SpotifyService] Error parsing message:", e);
+          }
+
+          this.spotifyEvent.emit("updatedSong");
         }
-
-        this.spotifyEvent.emit("updatedSong");
+      } catch (e) {
+        console.error("[SpotifyWS] Error parsing message:", e);
+        console.error("[SpotifyWS] Raw message:", message);
       }
     }
   }
