@@ -50,7 +50,9 @@ export class LastFmService {
 
     const track = trackRes.tracks[0];
 
-    const trackImage = track.images[track.images.length - 1].url;
+    const trackImage = track.images?.length
+      ? track.images[track.images.length - 1].url
+      : undefined;
     const progress = track.nowPlaying
       ? {
           playing: true,

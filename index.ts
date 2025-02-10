@@ -31,7 +31,7 @@ const BASE_LAST_PLAYING_STATE = {
 } satisfies LastPlayingState;
 
 const globalEvents = new EventEmitter();
-// let lastFmPriority = false;
+let lastFmPriority = false;
 
 // Initialize SpotifyService
 const spotifyService = new SpotifyService(process.env.SPTWSS_URL!);
@@ -45,8 +45,13 @@ const lastPlayingState = (): LastPlayingState => {
   const lastFmLastUpdate = lastFmService.lastTickUpdate;
   const spotifyLastUpdate = spotifyService.lastTickUpdate;
 
-  if (spotifyLastUpdate > lastFmLastUpdate) {
-    return spotifyService.getLastPlayingState() || BASE_LAST_PLAYING_STATE;
+  const spotifyLastState = spotifyService.getLastPlayingState();
+
+  if (
+    spotifyLastUpdate > lastFmLastUpdate &&
+    !(lastFmPriority && !spotifyLastState?.progress?.playing)
+  ) {
+    return spotifyLastState || BASE_LAST_PLAYING_STATE;
   } else {
     return lastFmService.getLastPlayingState() || BASE_LAST_PLAYING_STATE;
   }
@@ -137,15 +142,15 @@ app.ws(`/playing`, (ws, req) => {
 
 spotifyEvent.on("idle", () => {
   lastFmService.startRefreshLoop();
-  // lastFmPriority = true;
+  lastFmPriority = true;
 });
 spotifyEvent.on("resume", () => {
   lastFmService.stopRefreshLoop();
-  // lastFmPriority = false;
+  lastFmPriority = false;
 });
 spotifyEvent.on("updatedSong", () => {
   lastFmService.stopRefreshLoop();
-  // lastFmPriority = false;
+  lastFmPriority = false;
 
   globalEvents.emit("updatedSong");
 });

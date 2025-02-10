@@ -31,7 +31,7 @@ export class SpotifyService {
   constructor(sptwssUrl: string) {
     this.sptwssUrl = sptwssUrl;
     this.spotifyEvent = new EventEmitter();
-    this.lastTickUpdate = Date.now();
+    this.lastTickUpdate = 0;
 
     setInterval(() => {
       this.tick();
@@ -85,7 +85,10 @@ export class SpotifyService {
       }
 
       // If last update was more than 30 seconds ago, send idle event
-      if (Date.now() - this.lastTickUpdate > 1000 * 30 && !this.isIdle) {
+      if (
+        (Date.now() - this.lastTickUpdate > 1000 * 30 && !this.isIdle) ||
+        this.lastTickUpdate === 0
+      ) {
         // console.log("[SpotifyWS] Idle");
         this.spotifyEvent.emit("idle");
         this.isIdle = true;
@@ -95,8 +98,6 @@ export class SpotifyService {
 
   private onConnect(connection: any): void {
     console.log("[SpotifyWS] Connected");
-
-    this.lastTickUpdate = Date.now();
   }
 
   private onMessage(event: MessageEvent): void {
