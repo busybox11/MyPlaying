@@ -64,7 +64,10 @@ export class SpotifyService {
           const now = Date.now();
 
           // If last tick was over 30 seconds ago, send resume event
-          if (now - this.lastTickUpdate > 1000 * 30) {
+          if (
+            now - this.lastTickUpdate > 1000 * 30 ||
+            this.lastTickUpdate === 0
+          ) {
             // console.log("[SpotifyWS] Resume");
             this.spotifyEvent.emit("resume");
             this.isIdle = false;
@@ -92,6 +95,7 @@ export class SpotifyService {
         // console.log("[SpotifyWS] Idle");
         this.spotifyEvent.emit("idle");
         this.isIdle = true;
+        this.lastTickUpdate = Date.now();
       }
     } catch (e) {}
   }

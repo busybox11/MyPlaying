@@ -141,16 +141,16 @@ app.ws(`/playing`, (ws, req) => {
 });
 
 spotifyEvent.on("idle", () => {
-  lastFmService.startRefreshLoop();
   lastFmPriority = true;
+  lastFmService.startRefreshLoop();
 });
 spotifyEvent.on("resume", () => {
-  lastFmService.stopRefreshLoop();
   lastFmPriority = false;
+  lastFmService.stopRefreshLoop();
 });
 spotifyEvent.on("updatedSong", () => {
-  lastFmService.stopRefreshLoop();
   lastFmPriority = false;
+  lastFmService.stopRefreshLoop();
 
   globalEvents.emit("updatedSong");
 });
