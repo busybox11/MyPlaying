@@ -213,6 +213,8 @@ function handlePlayerEvents(data) {
 
       if (!state.meta.image) {
         DOM.songImg.style.display = "none";
+
+        setPlayerDOMState(state, targetLastState);
       } else {
         DOM.songImg.style.display = "block";
 

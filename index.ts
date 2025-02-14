@@ -46,15 +46,18 @@ const lastPlayingState = (): LastPlayingState => {
   const spotifyLastUpdate = spotifyService.lastTickUpdate;
 
   const spotifyLastState = spotifyService.getLastPlayingState();
+  const lastFmLastState = lastFmService.getLastPlayingState();
 
   if (
-    spotifyLastUpdate > lastFmLastUpdate &&
-    !(lastFmPriority && !spotifyLastState?.progress?.playing)
+    lastFmPriority &&
+    (lastFmLastUpdate > spotifyLastUpdate ||
+      (!spotifyLastState?.progress?.playing &&
+        lastFmLastState?.progress?.playing))
   ) {
-    return spotifyLastState || BASE_LAST_PLAYING_STATE;
-  } else {
-    return lastFmService.getLastPlayingState() || BASE_LAST_PLAYING_STATE;
+    return lastFmLastState || BASE_LAST_PLAYING_STATE;
   }
+
+  return spotifyLastState || BASE_LAST_PLAYING_STATE;
 };
 
 app.set("view engine", "ejs");

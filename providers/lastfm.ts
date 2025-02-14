@@ -14,6 +14,7 @@ export class LastFmService {
   private lastFmEvent: EventEmitter;
   private lastPlayingState: LastPlayingState | null = null;
   private refreshLoop!: Timer;
+  private sendUpdates: boolean = false;
 
   public userId: string;
   public lastTickUpdate: number = 0;
@@ -24,6 +25,9 @@ export class LastFmService {
     this.lastFmEvent = new EventEmitter();
     this.client = new LastClient(LASTFM_API_KEY);
 
+    this.refreshLoop = setInterval(() => {
+      this.refreshLastPlayingState();
+    }, 1000 * 8); // Refresh every 30 seconds
     this.refreshLastPlayingState();
   }
 
@@ -32,15 +36,13 @@ export class LastFmService {
   }
 
   public startRefreshLoop() {
-    this.refreshLoop = setInterval(() => {
-      this.refreshLastPlayingState();
-    }, 1000 * 30); // Refresh every 30 seconds
+    this.sendUpdates = true;
 
     this.refreshLastPlayingState();
   }
 
   public stopRefreshLoop() {
-    clearInterval(this.refreshLoop);
+    this.sendUpdates = false;
   }
 
   public async requestLastPlayedTrack() {
@@ -73,7 +75,7 @@ export class LastFmService {
 
     this.lastPlayingState = lastTrack;
 
-    this.lastFmEvent.emit("updatedSong");
+    if (this.sendUpdates) this.lastFmEvent.emit("updatedSong");
 
     const lastLoggedTrack = trackRes.tracks[1] || trackRes.tracks[0];
     this.lastTickUpdate = lastLoggedTrack.date?.getTime() || 0;
