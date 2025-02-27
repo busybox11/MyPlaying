@@ -4,12 +4,14 @@ import { EventEmitter } from "events";
 
 import { LastClient } from "@musicorum/lastfm";
 
+import type { BaseProvider } from "./BaseProvider";
+
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY!;
 
 type LastPlayingState =
   import("../types/playingState").LastPlayingState<"Last.fm">;
 
-export class LastFmService {
+export class LastFmService implements BaseProvider {
   private client: LastClient;
   private lastFmEvent: EventEmitter;
   private lastPlayingState: LastPlayingState | null = null;
@@ -29,6 +31,10 @@ export class LastFmService {
       this.refreshLastPlayingState();
     }, 1000 * 30); // Refresh every 30 seconds
     this.refreshLastPlayingState();
+  }
+
+  public connect(): void {
+    // No need to connect to Last.fm
   }
 
   private async refreshLastPlayingState() {
@@ -87,7 +93,7 @@ export class LastFmService {
     return this.lastPlayingState;
   }
 
-  public getLastFmEvent(): EventEmitter {
+  public getProviderEvent(): EventEmitter {
     return this.lastFmEvent;
   }
 }

@@ -35,11 +35,11 @@ let lastFmPriority = false;
 
 // Initialize SpotifyService
 const spotifyService = new SpotifyService(process.env.SPTWSS_URL!);
-const spotifyEvent = spotifyService.getSpotifyEvent();
+const spotifyEvent = spotifyService.getProviderEvent();
 
 // Initialize LastFmService
 const lastFmService = new LastFmService(process.env.LASTFM_USER!);
-const lastFmEvent = lastFmService.getLastFmEvent();
+const lastFmEvent = lastFmService.getProviderEvent();
 
 const lastPlayingState = (): LastPlayingState => {
   const lastFmLastUpdate = lastFmService.lastTickUpdate;
@@ -116,7 +116,7 @@ app.get("/playing/badge", async (_req, res) => {
 });
 
 app.ws(`/playing`, (ws, req) => {
-  function sendPlayingSong() {
+  function sendMessage(type: "player" | "nextTrack", data: any) {
     if (ws.readyState == 3) {
       ws.close();
       return;
@@ -125,10 +125,14 @@ app.ws(`/playing`, (ws, req) => {
     ws.send(
       JSON.stringify({
         success: true,
-        type: "player",
-        data: lastPlayingState(),
+        type,
+        data,
       })
     );
+  }
+
+  function sendPlayingSong() {
+    sendMessage("player", lastPlayingState());
   }
 
   sendPlayingSong();

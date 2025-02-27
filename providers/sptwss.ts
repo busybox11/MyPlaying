@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import type { BaseProvider } from "./BaseProvider";
 
 type LastPlayingState =
   import("../types/playingState").LastPlayingState<"Spotify">;
@@ -12,16 +13,18 @@ type SpotifyMessageData = {
   albumArt: string;
   id: string;
   preview: string | null;
-  progress: {
+  progress?: {
     playing: boolean;
     current: number | null;
     duration: number;
   };
 };
 
-export class SpotifyService {
+export class SpotifyService implements BaseProvider {
   private spotifyWs!: WebSocket;
   private spotifyEvent: EventEmitter;
+  private lastReceivedTrackObject: SpotifyMessageData | null = null;
+  // TODO: Don't store lastPlayingState, use lastReceivedTrackObject instead
   private lastPlayingState: LastPlayingState | null = null;
   private isIdle: boolean = false;
   private sptwssUrl: string;
@@ -53,6 +56,14 @@ export class SpotifyService {
       this.spotifyWs.close();
       this.initSpotifyWs();
     });
+  }
+
+  private requestNextTrack() {
+    this.spotifyWs.send(
+      JSON.stringify({
+        type: "requestNextTrack",
+      })
+    );
   }
 
   private tick() {
@@ -104,6 +115,21 @@ export class SpotifyService {
     console.log("[SpotifyWS] Connected");
   }
 
+  private formatTrackObject(msgData: SpotifyMessageData): LastPlayingState {
+    return {
+      meta: {
+        source: "Spotify",
+        url: `https://open.spotify.com/track/${msgData.id}`,
+        image: msgData.albumArt,
+        preview: msgData.preview || undefined,
+      },
+      progress: msgData.progress,
+      title: msgData.name,
+      artist: msgData.artist,
+      album: msgData.album,
+    };
+  }
+
   private onMessage(event: MessageEvent): void {
     const message = event.data as string;
 
@@ -113,18 +139,9 @@ export class SpotifyService {
 
         if (msgData.type === "updatedSong") {
           try {
-            this.lastPlayingState = {
-              meta: {
-                source: "Spotify",
-                url: `https://open.spotify.com/track/${msgData.id}`,
-                image: msgData.albumArt,
-                preview: msgData.preview || undefined,
-              },
-              progress: msgData.progress,
-              title: msgData.name,
-              artist: msgData.artist,
-              album: msgData.album,
-            };
+            this.lastReceivedTrackObject = msgData;
+
+            this.lastPlayingState = this.formatTrackObject(msgData);
           } catch (e) {
             console.error("[SpotifyService] Error parsing message:", e);
           }
@@ -142,7 +159,7 @@ export class SpotifyService {
     return this.lastPlayingState;
   }
 
-  public getSpotifyEvent(): EventEmitter {
+  public getProviderEvent(): EventEmitter {
     return this.spotifyEvent;
   }
 }
