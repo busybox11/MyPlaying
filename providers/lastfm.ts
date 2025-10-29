@@ -38,7 +38,12 @@ export class LastFmService implements BaseProvider {
   }
 
   private async refreshLastPlayingState() {
-    this.lastPlayingState = await this.requestLastPlayedTrack();
+    try {
+      this.lastPlayingState = await this.requestLastPlayedTrack();
+    } catch(e) {
+      console.error("[LastFM] Error in playback state refresh");
+      console.error(e)
+    }
   }
 
   public startRefreshLoop() {
