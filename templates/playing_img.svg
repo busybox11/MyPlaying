@@ -121,6 +121,7 @@
             padding: 1rem;
             gap: 1rem;
             height: {IMAGE_HEIGHT}px;
+            background: black;
             }
 
             #bg_cover_img {
@@ -135,7 +136,6 @@
 
             opacity: 0.3;
             object-fit: cover;
-            z-index: -1;
             }
 
             {ADD_IN_CSS}
