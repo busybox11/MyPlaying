@@ -39,7 +39,7 @@
             box-shadow: 0 0 0 2px #00000020;
             }
 
-            #cover_img_container:not(has(#cover_img:not([src=""]))):after {
+            #cover_img_container:has(#cover_img:not([src=""])):after {
             position: absolute;
             content: "";
             inset: 0;
