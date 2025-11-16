@@ -148,10 +148,20 @@
             object-fit: cover;
             }
 
+            #bg_cover_img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            }
+
             #cover_img[src=""],
             #cover_img_container:has(#cover_img[src=""]),
             #bg_cover_img[src=""] {
             display: none;
+            }
+
+            #cover_img[src=""] ~ #now_playing_content {
+            padding-left: 0.25rem;
             }
 
             {ADD_IN_CSS}
