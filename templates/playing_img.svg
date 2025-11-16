@@ -96,8 +96,8 @@
             #song_name {
             font-size: 2rem;
             font-weight: bold;
-            line-height: 2rem;
-            margin-bottom: 0.1rem;
+            line-height: 1.8rem;
+            margin-bottom: 0.4rem;
             text-wrap: balance;
             }
 
@@ -133,7 +133,7 @@
 
             filter: url(#blurFilter) url(#noiseFilter);
 
-            opacity: 0.5;
+            opacity: 0.25;
             object-fit: cover;
             z-index: -1;
             }
