@@ -97,7 +97,7 @@
             font-size: 2rem;
             font-weight: bold;
             line-height: 2rem;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.1rem;
             text-wrap: balance;
             }
 
@@ -110,8 +110,8 @@
 
             #main_frame {
             border-radius: 1.5rem;
-            background: #000000;
             box-shadow: inset 0 0 0 1px #FFFFFF20;
+            background: #0a0a0a;
             }
 
             #content {
@@ -121,7 +121,6 @@
             padding: 1rem;
             gap: 1rem;
             height: {IMAGE_HEIGHT}px;
-            background: black;
             }
 
             #bg_cover_img {
@@ -134,8 +133,9 @@
 
             filter: url(#blurFilter) url(#noiseFilter);
 
-            opacity: 0.3;
+            opacity: 0.5;
             object-fit: cover;
+            z-index: -1;
             }
 
             {ADD_IN_CSS}
@@ -156,7 +156,7 @@
             <feColorMatrix 
             in='noise'
             type='saturate' 
-            values='0' 
+            values='0.5' 
             result='grayscaleNoise' />
             <feComponentTransfer in='grayscaleNoise' result='adjustedNoise'>
                 <feFuncA type='discrete' tableValues='0 .75 0 .75 0 .75 0 .75' />
