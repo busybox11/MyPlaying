@@ -49,11 +49,6 @@ export default async function (
   // Fetch and replace cover image
   function errorCoverImage() {
     replaced = replaced.replaceAll("{COVER_URL}", ""); // set to empty string to avoid broken image
-    addInCSS += `
-      #cover_img {
-        display: none;
-      }
-    `;
   }
 
   try {

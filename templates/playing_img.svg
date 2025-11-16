@@ -39,7 +39,7 @@
             box-shadow: 0 0 0 2px #00000020;
             }
 
-            #cover_img_container:after {
+            #cover_img_container:not(has(#cover_img:not([src=""]))):after {
             position: absolute;
             content: "";
             inset: 0;
@@ -130,7 +130,11 @@
             z-index: 1;
             }
 
-            #bg_cover_img {
+            #bg_cover_img_cont {
+            background: radial-gradient(circle at 10% 10%, #e11bff, #8c6fff, #0099ff);
+            }
+
+            #bg_cover_img_cont {
             position: absolute;
             inset: 0;
 
@@ -142,6 +146,12 @@
 
             opacity: 0.2;
             object-fit: cover;
+            }
+
+            #cover_img[src=""],
+            #cover_img_container:has(#cover_img[src=""]),
+            #bg_cover_img[src=""] {
+            display: none;
             }
 
             {ADD_IN_CSS}
@@ -182,7 +192,9 @@
 
     <foreignObject id="main_frame" height="{IMAGE_HEIGHT}" width="{IMAGE_WIDTH}">
         <div xmlns="http://www.w3.org/1999/xhtml" id="content">
-            <img id="bg_cover_img" src="{COVER_URL}" height="{IMAGE_HEIGHT}" width="{IMAGE_WIDTH}" />
+            <div id="bg_cover_img_cont" height="{IMAGE_HEIGHT}" width="{IMAGE_WIDTH}" >
+                <img id="bg_cover_img" src="{COVER_URL}" />
+            </div>
 
             <div id="content_inner">
                 <div id="cover_img_container">
