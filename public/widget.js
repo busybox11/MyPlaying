@@ -1,6 +1,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 
 const DOM = {
+  songBgImg: document.getElementById("img_song_bg"),
   songImgContainer: document.getElementById("img_container"),
   songImg: document.getElementById("img_song"),
   songImgLink: document.getElementById("img_song_link"),
@@ -183,6 +184,26 @@ function setPlayerDOMState(state, targetLastState) {
 
   DOM.nowPlayingState.provider.innerText = state.meta?.source;
 
+  // add provider class to body
+  const makeProviderClass = (provider) => {
+    // replace every non alphanumeric character with a dash
+    const sanitizedProvider = provider
+      ?.toLowerCase()
+      ?.replace(/[^a-z0-9]/g, "-");
+    return `provider-${sanitizedProvider}`;
+  };
+  const providerClass = makeProviderClass(state.meta?.source);
+  const lastProviderClass = makeProviderClass(lastState.meta?.source);
+  if (
+    (lastProviderClass && lastProviderClass !== providerClass) ||
+    !lastProviderClass
+  ) {
+    if (lastProviderClass) {
+      document.body.classList.remove(lastProviderClass);
+    }
+    document.body.classList.add(providerClass);
+  }
+
   if (Boolean(state.meta.preview)) {
     DOM.previewPlayBtn.classList.add("can_preview");
   } else {
@@ -228,13 +249,16 @@ function handlePlayerEvents(data) {
         const newImg = new Image();
         hasCompletedImage = false;
         newImg.src = state.meta.image;
-        newImg.id = "img_song";
+
         newImg.onload = function () {
           hasCompletedImage = true;
           setPlayerDOMState(state, targetLastState);
 
+          newImg.id = "img_song";
+
           DOM.songImgLink.replaceChildren(newImg);
           DOM.songImg = newImg;
+          DOM.songBgImg.style.backgroundImage = `url(${state.meta.image})`;
         };
 
         // Will naturally resolve to the other case on the next tick

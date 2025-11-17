@@ -74,11 +74,20 @@ app.get("/playing/img", async (req, res) => {
   res.status(200).send(await playingImgTemplate(lastPlayingState(), req.query));
 });
 
+function makeProviderClass(provider: string | undefined) {
+  if (!provider) {
+    return "";
+  }
+
+  return provider?.toLowerCase().replace(/[^a-z0-9]/g, "-");
+}
+
 function widgetHandler(_req: Request, res: Response) {
   res.setHeader("cache-control", "public, max-age=0, must-revalidate");
   res.setHeader("content-type", "text/html; charset=utf-8");
   res.status(200).render("widget", {
     lastPlayingState: lastPlayingState(),
+    providerClass: makeProviderClass(lastPlayingState().meta?.source),
     analyticsScript: process.env.ANALYTICS_SCRIPT || "",
   });
 }
