@@ -137,7 +137,7 @@ export class SpotifyService implements BaseProvider {
       try {
         const msgData: SpotifyMessageData = JSON.parse(message);
 
-        if (msgData.type === "updatedSong") {
+        if (msgData && msgData.type === "updatedSong") {
           try {
             this.lastReceivedTrackObject = msgData;
 
